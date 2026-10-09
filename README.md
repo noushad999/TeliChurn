@@ -295,7 +295,7 @@ Keys are held as SHA-256 digests and compared in constant time. Access logs are 
 ## Quickstart
 
 ```bash
-git clone [https://github.com/noushad999/TeliChurn.git]
+git clone https://github.com/noushad999/TeliChurn.git
 cd prepaid-churn-prediction
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,dashboard]"
