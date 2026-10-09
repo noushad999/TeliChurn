@@ -1,0 +1,16 @@
+# Only the CRM / call-centre namespaces and Prometheus may reach the scoring API.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: churn-api-ingress
+spec:
+  podSelector:
+    matchLabels: {app: churn-api}
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - {key: kubernetes.io/metadata.name, operator: In, values: [crm, callcentre, monitoring, churn]}
+      ports:
+        - {port: 8000, protocol: TCP}

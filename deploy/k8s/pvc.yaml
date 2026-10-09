@@ -1,0 +1,10 @@
+# Shared store for data snapshots, the model registry, scores and reports.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: churn-store
+spec:
+  accessModes: ["ReadWriteMany"]
+  resources:
+    requests:
+      storage: 200Gi

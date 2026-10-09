@@ -1,0 +1,124 @@
+{
+  "status": "pass",
+  "stats": {
+    "subscribers": {
+      "rows": 99999
+    },
+    "usage_monthly": {
+      "rows": 368610,
+      "first": "2014-06-01",
+      "last": "2014-09-01"
+    },
+    "recharges": {
+      "rows": 2808330,
+      "first": "2014-06-01 00:00:00",
+      "last": "2014-09-30 12:00:00"
+    }
+  },
+  "issues": [
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "offnet_robi_min",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "offnet_banglalink_min",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "offnet_teletalk_min",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "sms_cnt",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "days_active",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "last_active_day",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "emergency_loan_cnt",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "complaint_cnt",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "drop_call_rate",
+      "rows": null
+    },
+    {
+      "table": "usage_monthly",
+      "check": "missing_column",
+      "severity": "warning",
+      "detail": "column not provided",
+      "column": "data_speed_mbps",
+      "rows": null
+    },
+    {
+      "table": "network_market",
+      "check": "missing_table",
+      "severity": "warning",
+      "detail": "optional source not provided; related features skipped",
+      "column": null,
+      "rows": null
+    },
+    {
+      "table": "contacts",
+      "check": "missing_table",
+      "severity": "warning",
+      "detail": "optional source not provided; related features skipped",
+      "column": null,
+      "rows": null
+    },
+    {
+      "table": "campaigns",
+      "check": "missing_table",
+      "severity": "warning",
+      "detail": "optional source not provided; related features skipped",
+      "column": null,
+      "rows": null
+    }
+  ]
+}

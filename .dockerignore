@@ -1,0 +1,12 @@
+.git
+.venv
+venv
+data
+outputs
+artifacts
+reports
+**/__pycache__
+.pytest_cache
+.ruff_cache
+docs/assets/*.png
+docs/assets/*.svg

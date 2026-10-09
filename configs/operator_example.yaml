@@ -1,0 +1,48 @@
+# Example: run the pipeline on an operator's own extracts.
+#   export CHURN_PII_SALT=...            # secret, from the vault; never commit it
+#   churn --config configs/operator_example.yaml validate
+#   churn --config configs/operator_example.yaml train
+extends: config.yaml
+
+source:
+  type: csv                    # csv | parquet | sql
+  path: /data/exports/churn    # one file per table
+  # type: sql
+  # uri_env: CHURN_DB_URI      # e.g. postgresql://user:pass@host/dwh (read from the environment)
+  pseudonymize:
+    enabled: true
+    salt_env: CHURN_PII_SALT
+    columns: [sub_id, contact_id]
+  tables:
+    subscribers:
+      file: DIM_SUBSCRIBER.csv
+      columns: {MSISDN: sub_id, ACTIVATION_MONTH: activation_month, DIVISION_NAME: division,
+                IS_URBAN: urban, GENDER: gender, AGE: age, PRICE_PLAN_TYPE: plan_type,
+                DEVICE_CLASS: handset, DUAL_SIM_FLAG: dual_sim, APP_USER_FLAG: app_user, MFS_FLAG: mfs_user}
+      values:
+        plan_type: {PRE: prepaid, POST: postpaid, HYBRID: postpaid}
+        handset: {"2G": feature_phone, "3G": smartphone_3g, "4G": smartphone_4g, "5G": smartphone_4g}
+        division: {Chittagong: Chattogram, Barisal: Barishal}
+    usage_monthly:
+      file: AGG_USAGE_MONTHLY.csv
+      # or, for type: sql
+      # query: >
+      #   SELECT msisdn, month_key, total_mou, onnet_mou, robi_mou, bl_mou, ttk_mou, data_mb, ...
+      #   FROM dwh.agg_usage_monthly WHERE month_key >= DATE '2025-01-01'
+      columns: {MSISDN: sub_id, MONTH_KEY: month, TOTAL_MOU: voice_min, ONNET_MOU: onnet_min,
+                ROBI_MOU: offnet_robi_min, BL_MOU: offnet_banglalink_min, TTK_MOU: offnet_teletalk_min,
+                DATA_MB: data_mb, SMS_CNT: sms_cnt, PACK_CNT: data_pack_cnt, REVENUE_BDT: revenue,
+                ACTIVE_DAYS: days_active, LAST_ACTIVE_DAY: last_active_day, EB_LOAN_CNT: emergency_loan_cnt,
+                COMPLAINT_CNT: complaint_cnt, DROP_RATE: drop_call_rate, AVG_DL_MBPS: data_speed_mbps}
+    recharges:
+      file: FCT_RECHARGE.csv
+      columns: {MSISDN: sub_id, RECHARGE_TS: ts, AMOUNT_BDT: amount, CHANNEL_NAME: channel}
+      values: {channel: {RETAIL: retailer, BKASH: mfs, NAGAD: mfs, MYAPP: app, CARD: card}}
+    network_market:
+      file: DIVISION_KPI_MONTHLY.csv
+    contacts:
+      file: TOP_CONTACTS_6M.csv
+      columns: {A_MSISDN: sub_id, B_MSISDN: contact_id, MOU: minutes}
+    campaigns:
+      file: CVM_CAMPAIGN_ASSIGNMENTS.csv
+      columns: {CAMPAIGN_MONTH: campaign_month, MSISDN: sub_id, IS_TREATMENT: treatment, OFFER_CODE: offer}

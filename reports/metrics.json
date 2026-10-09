@@ -1,0 +1,430 @@
+{
+  "model_version": "v20260927-063307",
+  "promoted": true,
+  "promotion_decision": "first model: no champion yet",
+  "data": {
+    "train_rows": 1585011,
+    "valid_rows": 311143,
+    "test_rows": 306094,
+    "features": 92,
+    "train_churn_rate": 0.039806663802333234,
+    "test_churn_rate": 0.03847184198318164
+  },
+  "best_iteration": 568,
+  "metrics_test": {
+    "LightGBM": {
+      "n": 306094,
+      "churn_rate": 0.03847184198318164,
+      "roc_auc": 0.8974200088927955,
+      "pr_auc": 0.5479567162072134,
+      "ks": 0.6701035201831382,
+      "brier": 0.023580790902594854,
+      "log_loss": 0.09633861336341128,
+      "precision_top5": 0.4824567134923228,
+      "capture_top5": 0.6270380434782609,
+      "lift_top5": 12.540515052625597,
+      "precision_top10": 0.2855696037113267,
+      "capture_top10": 0.7422724184782609,
+      "lift_top10": 7.422821185327347,
+      "precision_top20": 0.15710808735849982,
+      "capture_top20": 0.8167459239130435,
+      "lift_top20": 4.083716278185516
+    },
+    "Logistic regression": {
+      "n": 306094,
+      "churn_rate": 0.03847184198318164,
+      "roc_auc": 0.8761759445477969,
+      "pr_auc": 0.4036428436858714,
+      "ks": 0.6308001261279946,
+      "brier": 0.028225293547549313,
+      "log_loss": 0.11172514768872728,
+      "precision_top5": 0.4025481868670369,
+      "capture_top5": 0.5231827445652174,
+      "lift_top5": 10.463449788627614,
+      "precision_top10": 0.2644646999248587,
+      "capture_top10": 0.6874150815217391,
+      "lift_top10": 6.874240646976877,
+      "precision_top20": 0.1526650222969993,
+      "capture_top20": 0.7936480978260869,
+      "lift_top20": 3.9682275250490573
+    },
+    "Rule: days since recharge": {
+      "n": 306094,
+      "churn_rate": 0.03847184198318164,
+      "roc_auc": 0.7798097395548039,
+      "pr_auc": 0.24612011444541695,
+      "ks": 0.4096213695915125,
+      "precision_top5": 0.32270499836654687,
+      "capture_top5": 0.41941236413043476,
+      "lift_top5": 8.388082860904364,
+      "precision_top10": 0.18504361462315005,
+      "capture_top10": 0.48097826086956524,
+      "lift_top10": 4.809845463184314,
+      "precision_top20": 0.11369019422074846,
+      "capture_top20": 0.5910326086956522,
+      "lift_top20": 2.955153389079974
+    }
+  },
+  "risk_thresholds": {
+    "critical": 0.22806349531007047,
+    "high": 0.03990499951920482,
+    "medium": 0.020597148569833478
+  },
+  "driver_importance": {
+    "usage_decline": 0.4112854473089019,
+    "inactivity": 0.31142460552615614,
+    "multi_sim_low_loyalty": 0.20894634183649882,
+    "profile": 0.19438465766710977,
+    "early_life": 0.18016324797827069,
+    "competitor_pressure": 0.16166095116393722,
+    "social_contagion": 0.14022827023737042,
+    "network_experience": 0.09060944218394366,
+    "recharge_slowdown": 0.08375876224742233,
+    "credit_stress": 0.06871292907733305
+  },
+  "top_features_gain": {
+    "days_since_last_activity": 400193.84054517746,
+    "days_since_last_recharge": 62437.82007074356,
+    "voice_min_trend": 62200.89335870743,
+    "revenue_trend": 20608.429705142975,
+    "onnet_min_m1": 20556.507616758347,
+    "data_mb_trend": 19785.269221544266,
+    "tenure_months": 17603.088651776314,
+    "days_active_delta_1m": 17263.143042206764,
+    "sms_cnt_m0": 14796.287210464478,
+    "voice_min_delta_1m": 12310.805053710938,
+    "competitor_share_trend": 12042.16401231289,
+    "competitor_share_m1": 10008.814888477325,
+    "revenue_m0": 8431.925760269165,
+    "data_mb_per_active_day": 8415.558809041977,
+    "onnet_min_m0": 7662.998892068863,
+    "revenue_avg3m": 7549.244235754013,
+    "contacts_gone_share": 7482.5892543792725,
+    "revenue_per_active_day": 6919.322717428207,
+    "data_mb_m0": 6913.461353063583,
+    "days_active_m2": 6889.200963497162,
+    "top_competitor_share": 6523.670401096344,
+    "data_mb_m2": 6280.372616648674,
+    "emergency_loan_cnt_avg3m": 6209.001880407333,
+    "drop_call_rate_avg3m": 5872.45923319459,
+    "sms_cnt_m1": 5866.176139593124
+  },
+  "campaign_test": {
+    "base_size": 306094,
+    "cost_per_contact": 11.0,
+    "policy_targets": 9843,
+    "policy_target_share": 0.032156788437538796,
+    "policy_profit": 122601.61077685749,
+    "policy_churners_reached": 5226,
+    "oracle_best_k": 9804,
+    "oracle_best_profit": 122804.33746471797,
+    "random_targeting_profit_same_k": -92561.13839770043,
+    "blanket_campaign_profit": -2878432.29672922
+  },
+  "uplift_test": {
+    "n": 92540,
+    "treated_share": 0.5019018802679922,
+    "average_effect_per_1000": 3.77682108917652,
+    "rankings": {
+      "Risk + sleeping-dog guard": {
+        "qini_coefficient": 1.3915405605311493,
+        "prevented_per_1000_top10": 48.06505306066591,
+        "prevented_per_1000_top30": 16.68575363283492
+      },
+      "Uplift: X-learner": {
+        "qini_coefficient": 1.4303507868306,
+        "prevented_per_1000_top10": 43.02909983155287,
+        "prevented_per_1000_top30": 16.6209717744146
+      },
+      "Uplift: T-learner": {
+        "qini_coefficient": 1.3842375601670875,
+        "prevented_per_1000_top10": 40.02221499783268,
+        "prevented_per_1000_top30": 16.569908802474444
+      },
+      "Churn risk only": {
+        "qini_coefficient": 1.1019052360521575,
+        "prevented_per_1000_top10": 41.27066690880665,
+        "prevented_per_1000_top30": 15.01149606241757
+      },
+      "Random": {
+        "qini_coefficient": -0.07068584507330368,
+        "prevented_per_1000_top10": -0.7112874849975886,
+        "prevented_per_1000_top30": 3.3797034857310435
+      }
+    },
+    "sleeping_dog_share": 0.45237735033499027,
+    "profit_best": {
+      "Risk \u00d7 value + sleeping-dog guard": {
+        "best_share": 0.05025934730927167,
+        "best_net_value": 43005.592482147156
+      },
+      "Churn risk \u00d7 value": {
+        "best_share": 0.0402096390749946,
+        "best_net_value": 31909.272067151032
+      },
+      "Uplift \u00d7 value": {
+        "best_share": 0.0402096390749946,
+        "best_net_value": 26631.165388656897
+      },
+      "Random": {
+        "best_share": 0.0,
+        "best_net_value": 0.0
+      }
+    }
+  },
+  "segments": {
+    "overall_reach": 0.39453125,
+    "thresholds": {
+      "max_calibration_gap": 0.02,
+      "min_auc": 0.75,
+      "min_reach_ratio": 0.5,
+      "min_segment_size": 500
+    },
+    "segments": [
+      {
+        "dimension": "division",
+        "segment": "Barishal",
+        "n": 13900,
+        "churn_rate": 0.04697841726618705,
+        "mean_predicted": 0.04876642649425351,
+        "calibration_gap": 0.0017880092280664547,
+        "roc_auc": 0.8910226257128226,
+        "contact_rate": 0.029568345323741006,
+        "reach": 0.35987748851454826
+      },
+      {
+        "dimension": "division",
+        "segment": "Chattogram",
+        "n": 61752,
+        "churn_rate": 0.040112061147817075,
+        "mean_predicted": 0.04370268487191126,
+        "calibration_gap": 0.0035906237240941816,
+        "roc_auc": 0.8980034861425239,
+        "contact_rate": 0.02947272962819018,
+        "reach": 0.40613645538958415
+      },
+      {
+        "dimension": "division",
+        "segment": "Dhaka",
+        "n": 98027,
+        "churn_rate": 0.027533230640537813,
+        "mean_predicted": 0.032246279082639676,
+        "calibration_gap": 0.004713048442101863,
+        "roc_auc": 0.8892769214375894,
+        "contact_rate": 0.017780815489610004,
+        "reach": 0.3419785105594665
+      },
+      {
+        "dimension": "division",
+        "segment": "Khulna",
+        "n": 31043,
+        "churn_rate": 0.03939696549946848,
+        "mean_predicted": 0.0412470270534672,
+        "calibration_gap": 0.001850061553998722,
+        "roc_auc": 0.9038776403309473,
+        "contact_rate": 0.02989401797506684,
+        "reach": 0.410466067048242
+      },
+      {
+        "dimension": "division",
+        "segment": "Mymensingh",
+        "n": 23458,
+        "churn_rate": 0.046167618722823774,
+        "mean_predicted": 0.046742634372383025,
+        "calibration_gap": 0.0005750156495592518,
+        "roc_auc": 0.8935066157012644,
+        "contact_rate": 0.02984056611816864,
+        "reach": 0.36934441366574333
+      },
+      {
+        "dimension": "division",
+        "segment": "Rajshahi",
+        "n": 32669,
+        "churn_rate": 0.04297652208515718,
+        "mean_predicted": 0.04630266306767274,
+        "calibration_gap": 0.0033261409825155602,
+        "roc_auc": 0.9094482511642275,
+        "contact_rate": 0.031528360219168015,
+        "reach": 0.4337606837606838
+      },
+      {
+        "dimension": "division",
+        "segment": "Rangpur",
+        "n": 25993,
+        "churn_rate": 0.04628169122456046,
+        "mean_predicted": 0.0478788866484556,
+        "calibration_gap": 0.001597195423895137,
+        "roc_auc": 0.8883479414949249,
+        "contact_rate": 0.03393221251875505,
+        "reach": 0.42726517040731504
+      },
+      {
+        "dimension": "division",
+        "segment": "Sylhet",
+        "n": 19252,
+        "churn_rate": 0.05370870558902971,
+        "mean_predicted": 0.05579065593162138,
+        "calibration_gap": 0.0020819503425916694,
+        "roc_auc": 0.8944072572177112,
+        "contact_rate": 0.042592977353002284,
+        "reach": 0.44197292069632493
+      },
+      {
+        "dimension": "gender",
+        "segment": "F",
+        "n": 115718,
+        "churn_rate": 0.03762595274719577,
+        "mean_predicted": 0.04213290021744367,
+        "calibration_gap": 0.0045069474702479,
+        "roc_auc": 0.9013473645879085,
+        "contact_rate": 0.027834909002920894,
+        "reach": 0.4088194763435921
+      },
+      {
+        "dimension": "gender",
+        "segment": "M",
+        "n": 190376,
+        "churn_rate": 0.03898600663949237,
+        "mean_predicted": 0.04134046341496295,
+        "calibration_gap": 0.0023544567754705745,
+        "roc_auc": 0.895195669604286,
+        "contact_rate": 0.026857376980291635,
+        "reach": 0.3861492859067637
+      },
+      {
+        "dimension": "handset",
+        "segment": "feature_phone",
+        "n": 90170,
+        "churn_rate": 0.048353110790728626,
+        "mean_predicted": 0.05205056819104195,
+        "calibration_gap": 0.0036974574003133254,
+        "roc_auc": 0.8881294122175192,
+        "contact_rate": 0.03515581679050682,
+        "reach": 0.4098623853211009
+      },
+      {
+        "dimension": "handset",
+        "segment": "smartphone_3g",
+        "n": 48208,
+        "churn_rate": 0.03700630600730169,
+        "mean_predicted": 0.03987159389348127,
+        "calibration_gap": 0.002865287886179582,
+        "roc_auc": 0.8985966938393547,
+        "contact_rate": 0.018731330899435777,
+        "reach": 0.31390134529147984
+      },
+      {
+        "dimension": "handset",
+        "segment": "smartphone_4g",
+        "n": 167716,
+        "churn_rate": 0.03358057668916502,
+        "mean_predicted": 0.03655129789791036,
+        "calibration_gap": 0.002970721208745343,
+        "roc_auc": 0.8998195224617679,
+        "contact_rate": 0.025406043549810395,
+        "reach": 0.408203125
+      },
+      {
+        "dimension": "plan_type",
+        "segment": "postpaid",
+        "n": 15809,
+        "churn_rate": 0.010120817255993422,
+        "mean_predicted": 0.013276565331168373,
+        "calibration_gap": 0.0031557480751749512,
+        "roc_auc": 0.9076606332673014,
+        "contact_rate": 0.018533746600037954,
+        "reach": 0.38125
+      },
+      {
+        "dimension": "plan_type",
+        "segment": "prepaid",
+        "n": 290285,
+        "churn_rate": 0.04001584649568527,
+        "mean_predicted": 0.043184724629687005,
+        "calibration_gap": 0.0031688781340017333,
+        "roc_auc": 0.8951480398800884,
+        "contact_rate": 0.027700363435933652,
+        "reach": 0.3947141873278237
+      },
+      {
+        "dimension": "tenure",
+        "segment": "0-2 months",
+        "n": 30850,
+        "churn_rate": 0.09183144246353322,
+        "mean_predicted": 0.10003103139146205,
+        "calibration_gap": 0.008199588927928825,
+        "roc_auc": 0.8659401373738582,
+        "contact_rate": 0.05189627228525122,
+        "reach": 0.32827391457818567
+      },
+      {
+        "dimension": "tenure",
+        "segment": "1-3 years",
+        "n": 49547,
+        "churn_rate": 0.02827618221083012,
+        "mean_predicted": 0.03091803466988846,
+        "calibration_gap": 0.00264185245905834,
+        "roc_auc": 0.8961391168244414,
+        "contact_rate": 0.020606696671846933,
+        "reach": 0.39257673090649536
+      },
+      {
+        "dimension": "tenure",
+        "segment": "3+ years",
+        "n": 170377,
+        "churn_rate": 0.028906483856389067,
+        "mean_predicted": 0.031026084421263127,
+        "calibration_gap": 0.00211960056487406,
+        "roc_auc": 0.8845777651892475,
+        "contact_rate": 0.018987304624450484,
+        "reach": 0.3618274111675127
+      },
+      {
+        "dimension": "tenure",
+        "segment": "3-11 months",
+        "n": 55320,
+        "churn_rate": 0.04730657989877079,
+        "mean_predicted": 0.05136989592899522,
+        "calibration_gap": 0.0040633160302244314,
+        "roc_auc": 0.8966000569401568,
+        "contact_rate": 0.04477584960231381,
+        "reach": 0.5288498280473825
+      },
+      {
+        "dimension": "urban",
+        "segment": "rural",
+        "n": 166996,
+        "churn_rate": 0.046522072384967306,
+        "mean_predicted": 0.0498887504625915,
+        "calibration_gap": 0.0033666780776241967,
+        "roc_auc": 0.8937667815187795,
+        "contact_rate": 0.03313851828786318,
+        "reach": 0.4073883382674733
+      },
+      {
+        "dimension": "urban",
+        "segment": "urban",
+        "n": 139098,
+        "churn_rate": 0.028807028138434772,
+        "mean_predicted": 0.0317369425742872,
+        "calibration_gap": 0.002929914435852426,
+        "roc_auc": 0.8957268314807408,
+        "contact_rate": 0.02012969273461876,
+        "reach": 0.3696031944097829
+      }
+    ],
+    "flags": []
+  },
+  "timings_s": {
+    "load + validate data (contract)": 4.61,
+    "build feature snapshots": 23.01,
+    "train LightGBM": 69.01,
+    "train logistic-regression baseline": 11.39,
+    "evaluate on out-of-time test month": 8.53,
+    "SHAP reason codes + campaign economics": 13.5,
+    "uplift model on randomised campaigns": 65.52,
+    "segment & fairness report": 7.25,
+    "charts": 1.76,
+    "register model + champion/challenger gate": 1.32
+  }
+}

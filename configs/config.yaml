@@ -1,0 +1,82 @@
+# Telco churn pipeline configuration.
+# Months are calendar months ("YYYY-MM"); a snapshot "cutoff" is the last day of that month.
+
+seed: 42
+
+paths:
+  raw_dir: data/raw            # simulated data warehouse extracts (parquet)
+  features_dir: data/features  # feature snapshots
+  registry_dir: artifacts/registry  # every trained version + champion/challenger history
+  model_dir: artifacts/model   # deployment export of the current champion (mounted by the API)
+  reports_dir: reports         # metrics, charts, gains tables
+  scores_dir: outputs          # batch scores + campaign lists
+
+simulation:
+  n_subscribers: 300000        # active base at the start of the simulation
+  start_month: "2025-01"
+  months: 12
+  gross_add_rate: 0.04         # new SIM activations per month, as share of the initial base
+
+churn:
+  # Prepaid churn = subscriber active in the snapshot month, then ZERO revenue-generating
+  # activity (no usage, no recharge) for the next `inactivity_months` months (~60 days).
+  lookback_months: 3
+  inactivity_months: 2
+  label_events: [usage, recharge]   # what breaks the silence; [usage] ignores top-ups
+
+features:
+  exclude: []                  # e.g. [gender, age] where local policy forbids targeting on them
+
+training:
+  # Out-of-time design: standing at the end of 2025-10, labels are known for cutoffs <= 2025-08.
+  train_cutoffs: ["2025-03", "2025-04", "2025-05", "2025-06", "2025-07"]
+  valid_cutoff: "2025-08"      # early stopping + risk-band thresholds
+  test_cutoff: "2025-10"       # untouched future month, labels from Nov-Dec
+  score_cutoff: "2025-12"      # "today": score the live base, no labels yet
+  lgbm:
+    objective: binary
+    learning_rate: 0.1
+    num_leaves: 31
+    max_depth: 6               # shallow trees keep TreeSHAP reason codes fast
+    min_child_samples: 200
+    feature_fraction: 0.8
+    bagging_fraction: 0.8
+    bagging_freq: 1
+    lambda_l2: 5.0
+    verbose: -1
+  num_boost_round: 2000
+  early_stopping_rounds: 50
+
+campaign:
+  currency: BDT
+  contact_cost: 2.0            # SMS / OBD / push cost per targeted subscriber
+  offer_cost: 15.0             # marginal cost of the retention bonus (e.g. bonus data pack)
+  offer_redeem_rate: 0.6       # share of targeted subscribers who redeem the bonus
+  save_rate: 0.15              # share of would-be churners the offer retains; calibrate from `churn backtest`
+  margin: 0.55                 # contribution margin on ARPU
+  clv_months: 6                # value horizon of a saved subscriber
+  holdout_share: 0.10          # random share of every campaign list kept as untreated control
+
+registry:
+  tolerance: 0.005             # challenger may not lose more than this in PR-AUC or capture@10%
+
+fairness:                      # segment review thresholds in the model card
+  max_calibration_gap: 0.02    # |mean predicted - observed churn| per segment
+  min_auc: 0.75                # within-segment ranking quality
+  min_reach_ratio: 0.5         # segment's churners reached vs overall reach
+  min_segment_size: 500
+
+monitoring:                    # `churn backtest` alerts once outcomes are known
+  max_capture_drop: 0.05       # absolute drop in capture@10% vs the model's test month
+  max_pr_auc_drop_rel: 0.20    # relative drop in PR-AUC
+
+uplift:
+  # Randomised test-and-learn campaigns (50% treatment / 50% holdout). Fit on earlier campaigns,
+  # evaluate on a later one: the same out-of-time discipline as the churn model.
+  train_campaigns: ["2025-04", "2025-06"]
+  test_campaign: "2025-09"
+
+risk_bands:                    # share of the scored base (by rank) assigned to each band
+  critical: 0.05
+  high: 0.10
+  medium: 0.15

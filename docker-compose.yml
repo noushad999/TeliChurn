@@ -1,0 +1,45 @@
+# Local end-to-end stack:  CHURN_API_KEYS=my-key docker compose up --build
+#   pipeline   one-shot: simulate -> train -> score (writes the shared volumes)
+#   api        scoring API on :8000 (waits for the pipeline)
+#   dashboard  CVM dashboard on :8501
+#   prometheus metrics on :9090, scraping the API
+services:
+  pipeline:
+    build: .
+    command: ["churn", "pipeline", "--subscribers", "${SUBSCRIBERS:-100000}"]
+    volumes: &store
+      - data:/app/data
+      - artifacts:/app/artifacts
+      - outputs:/app/outputs
+      - reports:/app/reports
+
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      CHURN_API_KEYS: ${CHURN_API_KEYS:-dev-key-change-me}
+      CHURN_SCORES: /app/outputs/scores_2025-12.parquet
+    volumes: *store
+    depends_on:
+      pipeline: {condition: service_completed_successfully}
+    restart: unless-stopped
+
+  dashboard:
+    build: .
+    command: ["streamlit", "run", "src/churn/dashboard.py", "--server.port", "8501", "--server.address", "0.0.0.0", "--server.headless", "true"]
+    ports: ["8501:8501"]
+    volumes: *store
+    depends_on:
+      pipeline: {condition: service_completed_successfully}
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes: ["./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+    depends_on: [api]
+
+volumes:
+  data:
+  artifacts:
+  outputs:
+  reports:

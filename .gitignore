@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Generated data & artifacts (reproducible with `make pipeline`)
+data/
+artifacts/
+outputs/
+reports/drift_*.json
+
+.DS_Store
+reports/data_quality_*.json

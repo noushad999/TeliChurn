@@ -1,0 +1,39 @@
+# Pipeline on the public Indian prepaid dataset (see prepare_indian_telco.py).
+#   python examples/real_data/prepare_indian_telco.py
+#   export CHURN_PII_SALT=local-demo-salt
+#   churn --config examples/real_data/config.yaml validate
+#   churn --config examples/real_data/config.yaml train
+extends: ../../configs/config.yaml
+
+source:
+  type: parquet
+  path: data/real
+  pseudonymize:
+    enabled: true
+    salt_env: CHURN_PII_SALT
+    columns: [sub_id]
+
+paths:
+  features_dir: data/real_features
+  registry_dir: artifacts/real_registry
+  model_dir: artifacts/real_model
+  reports_dir: reports/real_data
+  scores_dir: outputs/real_data
+
+churn:
+  lookback_months: 2           # four months of history: two feature months per snapshot
+  inactivity_months: 1         # only one month follows the last feature month -> 30-day silence
+  label_events: [usage]        # the dataset's standard definition: no calls and no data next month
+
+training:
+  # out-of-time: learn July -> August behaviour, test on August -> September
+  train_cutoffs: ["2014-07"]
+  valid_cutoff: null           # no spare month: early-stop on 20% of training subscribers
+  valid_fraction: 0.2
+  test_cutoff: "2014-08"
+  score_cutoff: "2014-09"
+
+uplift: null                   # no randomised campaigns in this dataset
+
+campaign:
+  currency: INR                # economics are illustrative: offer costs were not calibrated for this market

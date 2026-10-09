@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -e ".[dev,dashboard]"
+      - run: ruff check src tests examples && ruff format --check src tests examples
+      - run: pytest
+      - name: Smoke-run the full pipeline on a small base
+        run: churn pipeline --subscribers 20000
+
+  container:
+    # builds the production image and exercises it end to end: batch pipeline + secured API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t telco-churn:ci .
+      - name: Validate compose file
+        run: CHURN_API_KEYS=x docker compose config -q
+      - name: Run the pipeline in the container
+        run: |
+          for v in data artifacts outputs reports; do docker volume create churn-$v; done
+          docker run --rm \
+            -v churn-data:/app/data -v churn-artifacts:/app/artifacts \
+            -v churn-outputs:/app/outputs -v churn-reports:/app/reports \
+            telco-churn:ci churn pipeline --subscribers 20000
+      - name: Start the API and call it
+        run: |
+          docker run -d --name api -p 8000:8000 \
+            -e CHURN_API_KEYS=ci-key -e CHURN_SCORES=/app/outputs/scores_2025-12.parquet \
+            -v churn-artifacts:/app/artifacts:ro -v churn-outputs:/app/outputs:ro \
+            telco-churn:ci
+          for i in $(seq 1 30); do curl -fs localhost:8000/health && break; sleep 2; done
+          echo
+          curl -fs localhost:8000/health | tee /dev/stderr | grep -q '"batch_scores_loaded":true'
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8000/v1/model)" = 401
+          curl -fs -H "X-API-Key: ci-key" localhost:8000/v1/model > /dev/null
+          curl -fs -H "X-API-Key: ci-key" -H "Content-Type: application/json" \
+            -d '{"subscribers": [{"sub_id": 1, "features": {"tenure_months": 2, "days_since_last_recharge": 40}}]}' \
+            localhost:8000/v1/predict | tee /dev/stderr | grep -q churn_probability
+          curl -fs localhost:8000/metrics | grep -q churn_api_requests_total
+      - name: API logs
+        if: always()
+        run: docker logs api || true
+
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Kubernetes manifests against the API schemas
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
+          kubectl kustomize deploy/k8s > rendered.yaml
+          ./kubeconform -strict -summary -kubernetes-version 1.30.0 rendered.yaml deploy/k8s/secret.example.yaml
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Airflow DAG compiles
+        run: python -m py_compile deploy/airflow/churn_monthly.py

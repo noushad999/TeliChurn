@@ -1,0 +1,18 @@
+# kubectl create namespace churn
+# kubectl -n churn create configmap churn-config --from-file=config.yaml=configs/config.yaml
+# kubectl -n churn apply -f deploy/k8s/secret.example.yaml   # after replacing the placeholders
+# kubectl apply -k deploy/k8s
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: churn
+resources:
+  - pvc.yaml
+  - api-deployment.yaml
+  - api-service.yaml
+  - api-hpa.yaml
+  - monthly-cronjob.yaml
+  - network-policy.yaml
+images:
+  - name: telco-churn
+    newName: registry.example.com/cvm/telco-churn
+    newTag: "2.0.0"

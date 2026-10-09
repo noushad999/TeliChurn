@@ -1,0 +1,57 @@
+# Monthly retrain + score on the 3rd at 02:00 (after the DWH month-end close), then hot-reload the API.
+# The run is idempotent: a challenger that fails the gate is registered but not promoted.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: churn-monthly
+spec:
+  schedule: "0 2 3 * *"
+  timeZone: Asia/Dhaka
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 6
+  failedJobsHistoryLimit: 6
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 21600
+      template:
+        spec:
+          restartPolicy: Never
+          securityContext: {runAsNonRoot: true, runAsUser: 10001, fsGroup: 10001}
+          containers:
+            - name: pipeline
+              image: telco-churn
+              command: ["sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  AS_OF=$(date -d "$(date +%Y-%m-01) -1 month" +%Y-%m)
+                  BACKTEST=$(date -d "$(date +%Y-%m-01) -3 month" +%Y-%m)
+                  churn validate
+                  churn train --as-of "$AS_OF"
+                  churn score --month "$AS_OF"
+                  cp "outputs/scores_${AS_OF}.parquet" outputs/scores_latest.parquet
+                  churn backtest --month "$BACKTEST" || echo "backtest skipped (no stored scores for $BACKTEST)"
+                  curl -fsS -X POST -H "X-API-Key: ${CHURN_API_KEYS%%,*}" http://churn-api/admin/reload
+              env:
+                - {name: CHURN_CONFIG, value: /etc/churn/config.yaml}
+                - name: CHURN_API_KEYS
+                  valueFrom: {secretKeyRef: {name: churn-secrets, key: CHURN_API_KEYS}}
+                - name: CHURN_PII_SALT
+                  valueFrom: {secretKeyRef: {name: churn-secrets, key: CHURN_PII_SALT}}
+                - name: CHURN_DB_URI
+                  valueFrom: {secretKeyRef: {name: churn-secrets, key: CHURN_DB_URI}}
+              resources:
+                requests: {cpu: "4", memory: 16Gi}
+                limits: {cpu: "8", memory: 32Gi}
+              volumeMounts:
+                - {name: config, mountPath: /etc/churn}
+                - {name: store, mountPath: /app/data, subPath: data}
+                - {name: store, mountPath: /app/artifacts, subPath: artifacts}
+                - {name: store, mountPath: /app/outputs, subPath: outputs}
+                - {name: store, mountPath: /app/reports, subPath: reports}
+          volumes:
+            - name: config
+              configMap: {name: churn-config}
+            - name: store
+              persistentVolumeClaim: {claimName: churn-store}
